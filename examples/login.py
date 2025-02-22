@@ -1,3 +1,10 @@
+""" 登陆微信并发送消息给指定好友进行测试
+
+1. 请先完成initialize.py中的初始化操作，获取到app_id和token
+2. 更多接口参考： https://apifox.com/apidoc/shared-69ba62ca-cb7d-437e-85e4-6f3d3df271b1/api-196794504
+"""
+
+
 from gewechat_client import GewechatClient
 import os
 from dotenv import load_dotenv
@@ -8,7 +15,7 @@ def main():
     
     # 从.env文件中读取配置
     base_url = os.getenv("BASE_URL")
-    token = os.getenv("GEWECHAT_TOKEN")
+    token = os.getenv("TOKEN")
     app_id = os.getenv("APP_ID")
     send_msg_nickname = "胖虎遛二狗" # 要发送消息的好友昵称
 
@@ -24,6 +31,8 @@ def main():
 
         # 获取好友列表
         fetch_contacts_list_result = client.fetch_contacts_list(app_id)
+        print(fetch_contacts_list_result)
+        print("====================================")
         if fetch_contacts_list_result.get('ret') != 200 or not fetch_contacts_list_result.get('data'):
             print("获取通讯录列表失败:", fetch_contacts_list_result)
             return
@@ -39,34 +48,6 @@ def main():
         if friends_info.get('ret') != 200 or not friends_info.get('data'):
             print("获取好友简要信息失败:", friends_info)
             return
-        # {
-        #     "ret": 200,
-        #     "msg": "获取联系人信息成功",
-        #     "data": [
-        #         {
-        #             "userName": "weixin",
-        #             "nickName": "微信团队",
-        #             "pyInitial": "WXTD",
-        #             "quanPin": "weixintuandui",
-        #             "sex": 0,
-        #             "remark": "",
-        #             "remarkPyInitial": "",
-        #             "remarkQuanPin": "",
-        #             "signature": null,
-        #             "alias": "",
-        #             "snsBgImg": null,
-        #             "country": "",
-        #             "bigHeadImgUrl": "https: //wx.qlogo.cn/mmhead/Q3auHgzwzM6H8bJKHKyGY2mk0ljLfodkWnrRbXLn3P11f68cg0ePxA/0",
-        #             "smallHeadImgUrl": "https://wx.qlogo.cn/mmhead/Q3auHgzwzM6H8bJKHKyGY2mk0ljLfodkWnrRbXLn3P11f68cg0ePxA/132",
-        #             "description": null,
-        #             "cardImgUrl": null,
-        #             "labelList": null,
-        #             "province": "",
-        #             "city": "",
-        #             "phoneNumList": null
-        #         }
-        #     ]
-        # }
         
         # 找对目标好友的wxid
         friends_info_list = friends_info['data']
