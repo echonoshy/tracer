@@ -1,12 +1,16 @@
 from gewechat_client import GewechatClient
 import os
+from dotenv import load_dotenv
 
 def main():
-    # 配置参数
-    base_url = os.environ.get("BASE_URL", "http://127.0.0.1:2531/v2/api")
-    token = os.environ.get("GEWECHAT_TOKE", "xxx")
-    app_id = os.environ.get("APP_ID", "xxx")
-    send_msg_nickname = "张伟" # 要发送消息的好友昵称
+    # 加载.env文件
+    load_dotenv()
+    
+    # 从.env文件中读取配置
+    base_url = os.getenv("BASE_URL")
+    token = os.getenv("GEWECHAT_TOKEN")
+    app_id = os.getenv("APP_ID")
+    send_msg_nickname = "胖虎遛二狗" # 要发送消息的好友昵称
 
     # 创建 GewechatClient 实例
     client = GewechatClient(base_url, token)
