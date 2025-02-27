@@ -20,3 +20,4 @@ Tracer: 是一个提供微信群组自动化信息服务的llm-workflow工具，
 ## 致谢
 - [Gewechat](https://github.com/Devo919/Gewechat)  
 - [gewechat-python](https://github.com/hanfangyuan4396/gewechat-python)  
+- [OpenGithubs](https://github.com/OpenGithubs/github-daily-rank)

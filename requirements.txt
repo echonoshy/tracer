@@ -1,0 +1,2 @@
+pyrootutils==1.0.4
+openai==1.64.0

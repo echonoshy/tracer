@@ -17,7 +17,7 @@ def main():
     base_url = os.getenv("BASE_URL")
     token = os.getenv("TOKEN")
     app_id = os.getenv("APP_ID")
-    send_msg_nickname = "胖虎遛二狗" # 要发送消息的好友昵称
+    send_msg_nickname = "胖虎遛二狗"  # 要发送消息的好友昵称
 
     # 创建 GewechatClient 实例
     client = GewechatClient(base_url, token)
