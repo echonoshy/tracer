@@ -10,7 +10,8 @@ root = pyrootutils.setup_root(
 )
 
 from utils.readme_downloader import get_github_readme
-from utils.hunyuan_llm import get_ai_response
+# from utils.hunyuan_llm import get_ai_response
+from utils.deepseek_llm import get_ai_response
 
 def read_prompt_template():
     """Read the prompt template from the prompt.txt file"""
