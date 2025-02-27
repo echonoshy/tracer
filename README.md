@@ -3,7 +3,7 @@
 > Tracer（猎空）是可以进行时间跳跃的冒险家。拥有双手枪快速连射、能量强大的脉冲炸弹与如珠般的幽默话语，猎空在伸张正义时能快速穿越空间并闪回时间。
 
 —— From [OverWatch](https://ow.blizzard.cn/heroes/tracer)  
-<img src="https://ld5.res.netease.com/images/20241107/1730974100534_45ffbb29e5.jpg" width="400" />
+<img src="https://upload.wikimedia.org/wikipedia/zh/d/d6/Tracer_Overwatch.png" width="200" height="200" />
 
 
 ## 项目简介
