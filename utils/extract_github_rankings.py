@@ -44,8 +44,8 @@ def extract_github_rankings(url):
     # Combine the prompt with the README content
     full_prompt = f"{prompt_template}\n\n{readme_content}"
     
-    # Send to Hunyuan LLM for extraction
-    print("Extracting information using Hunyuan LLM...")
+    # Send to deepseek LLM for extraction
+    print("Extracting information using deepseek LLM...")
     response = get_ai_response(full_prompt)
     
     if not response:
