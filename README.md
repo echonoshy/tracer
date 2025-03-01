@@ -6,18 +6,53 @@
 <img src="https://upload.wikimedia.org/wikipedia/zh/d/d6/Tracer_Overwatch.png" width="200" height="200" />
 
 
-## 项目简介
+## 📋 项目简介
 Tracer: 是一个提供微信群组自动化信息服务的llm-workflow工具，支持群内资讯推送、任务提醒及公告发布等。
 
+当前功能：订阅 Github trending 榜单 🌟，并且使用 deepseek-r1 进行知识总结，并使用微信自动化推送到指定的微信群 📱。
+因为不太想过分打扰微信群友，暂时只准备做 Github 这单一功能。但并不是这个项目的极限，比如打造自己的金融讯息管家等，基础功能都已经实现了，想象力才是这个项目的天花板。
 
 
+## 🔧 安装
 
+1. 部署 Gewechat 服务
+```sh
+# 拉镜像 
+docker pull registry.cn-hangzhou.aliyuncs.com/gewe/gewe:latest
+docker tag registry.cn-hangzhou.aliyuncs.com/gewe/gewe gewe
 
+# 启动镜像 
+mkdir -p /root/temp
+docker run -itd -v /root/temp:/root/temp -p 2531:2531 -p 2532:2532 --privileged=true --name=gewe gewe /usr/sbin/init
+```
 
+2. 验证微信并登陆 🔐
+```python
+# 依次执行workflow下的initialize.py, login。
+python workflows/initialize.py  # 获取token，app_id(登陆设备id)
 
+# 将上一步获取到的token和app_id保存到.env文件中 (参考.env-sample)
+python workflows/login.py  # 执行并扫码登录
+```
+
+## ▶️ 启动
+
+```python
+# 补充完整剩下的.env配置， 执行单轮测试 ✅
+python workflows/post_group_message.py
+```
+
+```sh
+# 设置定时任务 ⏰
+touch logs/github_daily.log
+
+crontab -i
+# 在定时器编辑器中复制下面内容，注意路径需要和你自己的机器匹配 ⚠️
+45 8 * * * cd /home/ubuntu/tracer && /home/ubuntu/miniconda3/bin/python workflows/post_group_message.py >> /home/ubuntu/tracer/logs/github_daily.log 2>&1
+```
 
 
 ## 致谢
-- [Gewechat](https://github.com/Devo919/Gewechat)  
+- [Gewechat](https://github.com/Devo919/Gewechat) 
 - [gewechat-python](https://github.com/hanfangyuan4396/gewechat-python)  
-- [OpenGithubs](https://github.com/OpenGithubs/github-daily-rank)
+- [OpenGithubs](https://github.com/OpenGithubs/github-daily-rank) 
