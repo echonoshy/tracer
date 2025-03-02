@@ -12,6 +12,7 @@ Tracer: 是一个提供微信群组自动化信息服务的llm-workflow工具，
 当前功能：订阅 Github trending 榜单 🌟，并且使用 deepseek-r1 进行知识总结，并使用微信自动化推送到指定的微信群 📱。
 因为不太想过分打扰微信群友，暂时只准备做 Github 这单一功能。但并不是这个项目的极限，比如打造自己的金融讯息管家等，基础功能都已经实现了，想象力才是这个项目的天花板。
 
+[![视频介绍](https://img.shields.io/badge/点击观看-B站视频-blue?logo=bilibili)](https://www.bilibili.com/video/BV15GXQY3Ez3/?vd_source=2acabf9b10c0b70274da02f31cf31368)
 
 ## 🔧 安装
 
