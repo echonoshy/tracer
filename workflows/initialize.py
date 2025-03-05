@@ -14,7 +14,7 @@
    - 系统首次认证必须步骤
 
 2. 获取登录二维码
-   - 使用令牌获取二维码、app_id 和 uuid
+   - 使用令牌获取二维码、app_id
    - appId 说明：
      * 首次登录：留空，系统自动创建设备ID
      * 重复登录：必须使用之前获取的 appId
@@ -31,16 +31,11 @@
      * 完成首次完整登录流程后可保持长期在线
    - 重要：请务必保存 appId 和 wxid 的对应关系
 
-4. 回调设置（可选）
-   - 用途：消息状态实时监控
-   - 功能：消息发送后向指定回调地址推送状态
-   - 说明：非必要功能，可根据需求决定是否配置
 
-注意事项
+⚠️ 注意事项
 -------
 - 妥善保存首次登录获取的设备信息
 - 避免频繁切换设备，保持登录状态稳定
-- 建议实现掉线自动重连机制
 """
 
 from gewechat_client import GewechatClient
@@ -48,39 +43,36 @@ from gewechat_client import GewechatClient
 
 def get_token():
     """获取认证令牌"""
-    client = GewechatClient()
     base_url = "http://127.0.0.1:2531/v2/api"
-    res = client.get_token(base_url)
+    client = GewechatClient(base_url=base_url, token="")
+    res = client.get_token()
     
     if res['ret'] != 200:
         print("获取认证令牌失败:", res)
     else:
-        print("获取认证令牌成功")
+        print("获取认证令牌成功， 请手动保存到.env中")
         token = res['data']
         print("====================================")
         print("认证令牌:", token)
+        print("====================================")
     return token
 
 def get_app_id():
     """获取appId, uuid"""
-    client = GewechatClient()
     base_url = "http://127.0.0.1:2531/v2/api"
     token = get_token()
-    res = client.get_qr(base_url, token)
+    client = GewechatClient(base_url=base_url, token=token)
     
-    if res['ret'] != 200:
-        print("获取appId, uuid失败:", res)
+    
+    app_id, error_msg = client.login(app_id="")
+    
+    if app_id:
+        print("====================================")
+        print("获取appId成功, 请保存到.env中。 appId:", app_id)
+        print("====================================")
     else:
-        print("获取appId, uuid成功")
-        app_id = res['data']['appId']
-        uuid = res['data']['uuid']
-        print("====================================")
-        print("appId:", app_id)
-        print("====================================")
-        print("uuid:", uuid)
-        print("====================================")
-    return app_id, uuid
-
+        print("获取appId失败:", error_msg)
+    
 
 if __name__ == "__main__":
     # 手动记录一下 token 和 app_id 并保存到 .env 文件中
