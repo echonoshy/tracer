@@ -45,7 +45,7 @@ python workflows/post_group_message.py
 
 ```sh
 # 设置定时任务 ⏰
-touch logs/github_daily.log
+mkdir -p logs/ && touch logs/github_daily.log
 
 crontab -i
 # 在定时器编辑器中复制下面内容，注意路径需要和你自己的机器匹配 ⚠️
