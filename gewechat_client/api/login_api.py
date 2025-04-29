@@ -76,7 +76,7 @@ class LoginApi:
 
         qr_response = self.get_qr(app_id)
         if qr_response.get('ret') != 200:
-            print_yellow(f"获取二维码失败:", qr_response)
+            print_yellow("获取二维码失败:", qr_response)
             return None, None
 
         qr_data = qr_response.get('data', {})
