@@ -177,3 +177,12 @@ cython_debug/
 
 # PyPI configuration file
 .pypirc
+
+
+# fast-poster
+data/
+
+# pictues
+*.jpg
+*.jpeg
+*.png
