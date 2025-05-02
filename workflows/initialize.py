@@ -46,33 +46,33 @@ def get_token():
     base_url = "http://127.0.0.1:2531/v2/api"
     client = GewechatClient(base_url=base_url, token="")
     res = client.get_token()
-    
-    if res['ret'] != 200:
+
+    if res["ret"] != 200:
         print("获取认证令牌失败:", res)
     else:
         print("获取认证令牌成功， 请手动保存到.env中")
-        token = res['data']
+        token = res["data"]
         print("====================================")
         print("认证令牌:", token)
         print("====================================")
     return token
+
 
 def get_app_id():
     """获取appId, uuid"""
     base_url = "http://127.0.0.1:2531/v2/api"
     token = get_token()
     client = GewechatClient(base_url=base_url, token=token)
-    
-    
+
     app_id, error_msg = client.login(app_id="")
-    
+
     if app_id:
         print("====================================")
         print("获取appId成功, 请保存到.env中。 appId:", app_id)
         print("====================================")
     else:
         print("获取appId失败:", error_msg)
-    
+
 
 if __name__ == "__main__":
     # 手动记录一下 token 和 app_id 并保存到 .env 文件中
