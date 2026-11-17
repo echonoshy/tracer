@@ -1,3 +1,5 @@
+from urllib.parse import urlsplit
+
 import requests
 from requests.adapters import HTTPAdapter
 from requests.packages.urllib3.util.retry import Retry
@@ -19,43 +21,47 @@ def create_session():
     return session
 
 def get_github_readme(url):
-    """
-    Get README content from GitHub repository and return it as text
-    
-    This function prioritizes using GitHub's official API which is more stable
-    than scraping raw content URLs
-    """
-    headers = {
-        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36',
-        'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8'
-    }
-    
+    """Fetch the default README or the exact file named by a GitHub blob URL."""
     try:
-        session = create_session()
-        
-        # Extract owner and repo from URL
-        if '/blob/' in url:
-            url = url.split('/blob/')[0]
-        
-        parts = url.split('github.com/')[1].split('/')
-        owner, repo = parts[0], parts[1]
-        
-        # First try the GitHub API (preferred method)
-        api_url = f"https://api.github.com/repos/{owner}/{repo}/readme"
-        print(f"Fetching README using GitHub API: {api_url}")
-        response = session.get(api_url, headers=headers, timeout=10)
-        
-        if response.status_code == 200:
-            import base64
-            return base64.b64decode(response.json()['content']).decode('utf-8')
-        
-        # If API fails, fall back to raw content URL
-        print("API request failed, trying raw content URL...")
-        raw_url = f"https://raw.githubusercontent.com/{owner}/{repo}/main/README.md"
-        response = session.get(raw_url, headers=headers, timeout=10)
-        response.raise_for_status()
-        return response.text
-            
+        parsed = urlsplit(url)
+        if parsed.scheme not in ("http", "https") or parsed.hostname != "github.com":
+            raise ValueError("Expected a github.com repository or blob URL")
+        parts = parsed.path.strip("/").split("/", 3)
+        if len(parts) < 2 or not all(parts[:2]):
+            raise ValueError("Missing GitHub repository name")
+        owner, repo = parts[:2]
+        with create_session() as session:
+            endpoint = f"https://api.github.com/repos/{owner}/{repo}"
+            params = {}
+            if len(parts) == 2:
+                endpoint += "/readme"
+                path = "HEAD/README.md"
+            elif len(parts) == 4 and parts[2] == "blob" and "/" in parts[3]:
+                path = parts[3]
+                ref, filename = path.split("/", 1)
+                endpoint += f"/contents/{filename}"
+                params["ref"] = ref
+            else:
+                raise ValueError("Expected a GitHub file URL containing /blob/")
+
+            try:
+                response = session.get(
+                    endpoint, params=params, headers={"Accept": "application/vnd.github.raw+json"},
+                    timeout=10,
+                )
+                response.raise_for_status()
+                response.encoding = "utf-8"
+                return response.text
+            except requests.RequestException:
+                pass
+
+            response = session.get(
+                f"https://raw.githubusercontent.com/{owner}/{repo}/{path}", timeout=10,
+            )
+            response.raise_for_status()
+            response.encoding = "utf-8"
+            return response.text
+
     except Exception as e:
         print(f"An error occurred: {str(e)}")
         return None

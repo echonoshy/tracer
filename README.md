@@ -29,6 +29,13 @@ Tracer: 是一个提供微信群组自动化信息服务的llm-workflow工具，
 
 ### 部署步骤
 
+先在项目根目录安装 Python 依赖，并从模板创建本地配置。
+
+```sh
+python -m pip install -r requirements.txt
+cp -n .env-sample .env
+```
+
 1. 部署 Gewechat 服务
 ```sh
 # 拉镜像 
@@ -47,6 +54,8 @@ python workflows/initialize.py  # 获取token，app_id(登陆设备id)
 
 # 将上一步获取到的token和app_id保存到.env文件中 (参考.env-sample)
 python workflows/login.py  # 执行并扫码登录
+# 如要发送一条测试消息，明确指定接收人的微信 ID
+# python workflows/login.py --test-recipient wxid_xxx
 ```
 
 ## ▶️ 启动

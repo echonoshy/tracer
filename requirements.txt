@@ -1,2 +1,5 @@
 pyrootutils==1.0.4
 openai==1.64.0
+python-dotenv>=1,<2
+requests>=2,<3
+qrcode>=7,<9

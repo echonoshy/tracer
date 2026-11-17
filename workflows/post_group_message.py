@@ -48,7 +48,7 @@ def send_group_message(config, url=None):
         print(f"正在获取GitHub日榜数据: {github_url}")
         result = extract_github_rankings(github_url)
         
-        if not result:
+        if not result or not (result.get("content") or "").strip():
             print("获取GitHub日榜数据失败")
             return None
             
@@ -79,14 +79,15 @@ def main():
     config = init_config()
     if not all(config.values()):
         print("配置信息不完整，请检查环境变量")
-        return
+        return 1
     
     result = send_group_message(config, args.url)
-    if result:
+    if result and result.get("ret") == 200:
         print("消息发送成功:", result)
-    else:
-        print("消息发送失败")
+        return 0
+    print("消息发送失败")
+    return 1
 
 
 if __name__ == "__main__":
-    main()
+    raise SystemExit(main())

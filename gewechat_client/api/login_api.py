@@ -76,7 +76,7 @@ class LoginApi:
 
         qr_response = self.get_qr(app_id)
         if qr_response.get('ret') != 200:
-            print_yellow(f"获取二维码失败:", qr_response)
+            print_yellow(f"获取二维码失败: {qr_response}")
             return None, None
 
         qr_data = qr_response.get('data', {})
@@ -121,10 +121,9 @@ class LoginApi:
         make_and_print_qr(f"http://weixin.qq.com/x/{uuid}")
 
         # 3. 轮询检查登录状态
-        retry_count = 0
         max_retries = 100  # 最大重试100次
         
-        while retry_count < max_retries:
+        for attempt in range(max_retries):
             login_status = self.check_qr(app_id, uuid, "")
             if login_status.get('ret') != 200:
                 print_red(f"检查登录状态失败: {login_status}")
@@ -132,25 +131,20 @@ class LoginApi:
 
             login_data = login_status.get('data', {})
             status = login_data.get('status')
-            expired_time = login_data.get('expiredTime', 0)
-            
-            # 检查二维码是否过期，提前5秒重新获取
-            if expired_time <= 5:
-                print_yellow("二维码即将过期，正在重新获取...")
-                _, uuid = self._get_and_validate_qr(app_id)
-                if not uuid:
-                    return app_id, "重新获取二维码失败"
-
-                make_and_print_qr(f"http://weixin.qq.com/x/{uuid}")
-                continue
-
             if status == 2:  # 登录成功
                 nick_name = login_data.get('nickName', '未知用户')
                 print_green(f"\n登录成功！用户昵称: {nick_name}")
                 return app_id, ""
-            else:
-                retry_count += 1
-                if retry_count >= max_retries:
-                    print_yellow("登录超时，请重新尝试")
-                    return app_id, "登录超时，请重新尝试"
-                time.sleep(5)
+
+            if attempt == max_retries - 1:
+                break
+            if login_data.get('expiredTime', 0) <= 5:
+                print_yellow("二维码即将过期，正在重新获取...")
+                _, uuid = self._get_and_validate_qr(app_id)
+                if not uuid:
+                    return app_id, "重新获取二维码失败"
+                make_and_print_qr(f"http://weixin.qq.com/x/{uuid}")
+            time.sleep(5)
+
+        print_yellow("登录超时，请重新尝试")
+        return app_id, "登录超时，请重新尝试"

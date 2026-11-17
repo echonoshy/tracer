@@ -38,42 +38,45 @@
 - 避免频繁切换设备，保持登录状态稳定
 """
 
+import argparse
+import os
+
+import pyrootutils
+
+pyrootutils.setup_root(__file__, indicator=".project-root", pythonpath=True)
+
 from gewechat_client import GewechatClient
 
 
-def get_token():
+def get_token(base_url=None):
     """获取认证令牌"""
-    base_url = "http://127.0.0.1:2531/v2/api"
+    base_url = base_url or os.getenv("BASE_URL") or "http://127.0.0.1:2531/v2/api"
     client = GewechatClient(base_url=base_url, token="")
     res = client.get_token()
-    
-    if res['ret'] != 200:
-        print("获取认证令牌失败:", res)
-    else:
-        print("获取认证令牌成功， 请手动保存到.env中")
-        token = res['data']
-        print("====================================")
-        print("认证令牌:", token)
-        print("====================================")
-    return token
+    if res.get("ret") != 200 or not res.get("data"):
+        raise RuntimeError("获取认证令牌失败")
+    print("请将认证令牌保存到 .env 中:", res["data"])
+    return res["data"]
+
 
 def get_app_id():
-    """获取appId, uuid"""
-    base_url = "http://127.0.0.1:2531/v2/api"
-    token = get_token()
-    client = GewechatClient(base_url=base_url, token=token)
-    
-    
-    app_id, error_msg = client.login(app_id="")
-    
+    """获取 appId，向命令行报告登录结果。"""
+    base_url = os.getenv("BASE_URL") or "http://127.0.0.1:2531/v2/api"
+    try:
+        token = get_token(base_url)
+        client = GewechatClient(base_url=base_url, token=token)
+        app_id, error_msg = client.login(app_id="")
+    except RuntimeError as exc:
+        print("初始化失败:", exc)
+        return 1
     if app_id:
-        print("====================================")
-        print("获取appId成功, 请保存到.env中。 appId:", app_id)
-        print("====================================")
-    else:
-        print("获取appId失败:", error_msg)
-    
+        print("请将 appId 保存到 .env 中:", app_id)
+    if error_msg or not app_id:
+        print("登录失败:", error_msg)
+        return 1
+    return 0
+
 
 if __name__ == "__main__":
-    # 手动记录一下 token 和 app_id 并保存到 .env 文件中
-    get_app_id()
+    argparse.ArgumentParser(description="初始化 Gewechat 并获取 appId").parse_args()
+    raise SystemExit(get_app_id())
